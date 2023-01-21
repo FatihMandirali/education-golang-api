@@ -8,18 +8,28 @@ import (
 	. "education.api/entities"
 	. "education.api/utils"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"time"
 )
 
-func PostLogin(W http.ResponseWriter, r *http.Request) {
-	lang := r.Header.Get("Accept-Language")
+// PostLogin godoc
+// @Summary Login servisi
+// @Produce json
+// @Accept json
+// @Param quote body quote true "Alıntı Bilgileri"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /login/ [post]
+func PostLogin(context *gin.Context) {
+	lang := context.Request.Header.Get("Accept-Language")
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
 	var loginRequest LoginRequest
-	err := json.NewDecoder(r.Body).Decode(&loginRequest)
+	err := json.NewDecoder(context.Request.Body).Decode(&loginRequest)
 	CheckError(err)
 
 	var user User
@@ -29,12 +39,10 @@ func PostLogin(W http.ResponseWriter, r *http.Request) {
 	}
 	match := CheckPasswordHash(loginRequest.Password, user.Password)
 	if match == false {
-		res, err := json.Marshal(BaseResponse{StatusCode: 500, Message: TextLanguage("loginInfoError", lang)})
-		CheckError(err)
+		//res, err := json.Marshal(BaseResponse{StatusCode: 500, Message: TextLanguage("loginInfoError", lang)})
+		//CheckError(err)
+		context.AbortWithStatusJSON(http.StatusOK, BaseResponse{StatusCode: ERROR, Message: TextLanguage("loginInfoError", lang)})
 
-		W.Header().Set("Content-Type", "application/json")
-		W.WriteHeader(http.StatusOK)
-		W.Write(res)
 		return
 	}
 	expirationTime := time.Now().Add(1 * time.Minute)
@@ -50,14 +58,9 @@ func PostLogin(W http.ResponseWriter, r *http.Request) {
 	var jwtKey = []byte(JwtSecret)
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		W.WriteHeader(http.StatusInternalServerError)
+		context.AbortWithStatusJSON(http.StatusOK, BaseResponse{StatusCode: ERROR, Message: TextLanguage("loginInfoError", lang)})
 		return
 	}
-	//signedToken := []byte(tokenString)
-	res, err := json.Marshal(BaseResponse{Data: tokenString, StatusCode: 200})
 	CheckError(err)
-
-	W.Header().Set("Content-Type", "application/json")
-	W.WriteHeader(http.StatusOK)
-	W.Write(res)
+	context.AbortWithStatusJSON(http.StatusOK, BaseResponse{Data: tokenString, StatusCode: SUCCESS})
 }

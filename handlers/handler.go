@@ -1,21 +1,28 @@
 package handlers
 
 import (
+	_ "education.api/cmd/docs" //swagger sayfasının hata vermemesi için eklememiz lazım
+	. "education.api/enum"
+	"education.api/middleware"
 	. "education.api/services"
-	"github.com/gorilla/mux"
-	"net/http"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// swagger kurulumu: https://santoshk.dev/posts/2022/how-to-integrate-swagger-ui-in-go-backend-gin-edition/
+// swagger init hatası çözümü: https://github.com/swaggo/swag/issues/197
 func Run() {
-	r := mux.NewRouter().StrictSlash(true)
+	r := gin.Default()
 	//Login
-	r.HandleFunc("/api/login", PostLogin).Methods("POST")
+	r.POST("/login", PostLogin)
 	//Admins
-	r.HandleFunc("/api/admin", GetAdmins).Methods("GET")
+	api := r.Group("/api")
+	api.Use(middleware.ValidateToken())
+	admins := api.Group("/admin")
+	admins.Use(middleware.AuthorizationToken([]string{string(Admin)}))
+	admins.GET("/", GetAdmins)
 
-	server := &http.Server{
-		Addr:    ":8080",
-		Handler: r,
-	}
-	server.ListenAndServe()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.Run(":8080")
 }
