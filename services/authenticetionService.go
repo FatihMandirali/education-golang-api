@@ -6,11 +6,11 @@ import (
 	. "education.api/dto/request"
 	. "education.api/dto/response"
 	. "education.api/entities"
+	. "education.api/generic"
 	. "education.api/utils"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"net/http"
 	"time"
 )
 
@@ -30,19 +30,16 @@ func PostLogin(context *gin.Context) {
 
 	var loginRequest LoginRequest
 	err := json.NewDecoder(context.Request.Body).Decode(&loginRequest)
-	CheckError(err)
+	CheckError(err, context, TextLanguage("loginInfoError", lang))
 
 	var user User
 	connection.First(&user, "email = ?", loginRequest.Email)
 	if user.Email == "" {
-		CheckError(err)
+		CheckError(err, context, TextLanguage("loginInfoError", lang))
 	}
 	match := CheckPasswordHash(loginRequest.Password, user.Password)
 	if match == false {
-		//res, err := json.Marshal(BaseResponse{StatusCode: 500, Message: TextLanguage("loginInfoError", lang)})
-		//CheckError(err)
-		context.AbortWithStatusJSON(http.StatusOK, BaseResponse{StatusCode: ERROR, Message: TextLanguage("loginInfoError", lang)})
-
+		GenericResponse(context, ERROR, TextLanguage("loginInfoError", lang), nil)
 		return
 	}
 	expirationTime := time.Now().Add(1 * time.Minute)
@@ -58,9 +55,8 @@ func PostLogin(context *gin.Context) {
 	var jwtKey = []byte(JwtSecret)
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusOK, BaseResponse{StatusCode: ERROR, Message: TextLanguage("loginInfoError", lang)})
+		GenericResponse(context, ERROR, TextLanguage("loginInfoError", lang), nil)
 		return
 	}
-	CheckError(err)
-	context.AbortWithStatusJSON(http.StatusOK, BaseResponse{Data: tokenString, StatusCode: SUCCESS})
+	GenericResponse(context, SUCCESS, "", tokenString)
 }

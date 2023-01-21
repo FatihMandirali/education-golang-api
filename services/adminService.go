@@ -3,10 +3,9 @@ package services
 import (
 	. "education.api/config"
 	"education.api/dbconnect"
-	. "education.api/dto/response"
+	. "education.api/generic"
 	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 )
 
 // admin list
@@ -16,5 +15,5 @@ func GetAdmins(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
-	context.AbortWithStatusJSON(http.StatusOK, BaseResponse{StatusCode: SUCCESS})
+	GenericResponse(context, SUCCESS, "", nil)
 }
