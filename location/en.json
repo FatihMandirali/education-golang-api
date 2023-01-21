@@ -1,0 +1,4 @@
+{
+  "loginInfoError": "Email or password is wrong",
+  "tokenError": "Pelease, You are repeat login"
+}
