@@ -1,4 +1,5 @@
 {
   "loginInfoError": "Email or password is wrong",
-  "tokenError": "Pelease, You are repeat login"
+  "tokenError": "Pelease, You are repeat login",
+  "badRequest": "Please, check request"
 }

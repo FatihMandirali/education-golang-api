@@ -42,7 +42,7 @@ func PostLogin(context *gin.Context) {
 		GenericResponse(context, ERROR, TextLanguage("loginInfoError", lang), nil)
 		return
 	}
-	expirationTime := time.Now().Add(1 * time.Minute)
+	expirationTime := time.Now().Add(1000000 * time.Minute)
 	claims := &TokenResponse{
 		Email: user.Email,
 		Role:  user.Role,

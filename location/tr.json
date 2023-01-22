@@ -1,4 +1,5 @@
 {
   "loginInfoError": "Email veya şifre yanlış",
-  "tokenError": "Lütfen tekrar giriş yapın"
+  "tokenError": "Lütfen tekrar giriş yapın",
+  "badRequest": "Lütfen isteğinizi kontrol ediniz"
 }
