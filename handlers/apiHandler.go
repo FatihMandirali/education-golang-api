@@ -22,6 +22,10 @@ func Run() {
 	admins := api.Group("/admin")
 	admins.Use(middleware.AuthorizationToken([]string{string(Admin)}))
 	admins.GET("/", GetAdmins)
+	admins.POST("/", PostAdmin)
+	admins.PUT("/", UpdateAdmin)
+	admins.GET("/:id", GetAdminById)
+	admins.DELETE("/:id", DeleteAdminById)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
