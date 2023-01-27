@@ -4,79 +4,68 @@ import (
 	"education.api/config"
 	"education.api/dbconnect"
 	"education.api/dto/request"
-	. "education.api/entities"
+	"education.api/entities"
 	. "education.api/generic"
 	"education.api/utils"
 	"github.com/gin-gonic/gin"
 )
 
-// branch list
-func GetBranchList(context *gin.Context) {
+// announcement list
+func GetAnnouncementList(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
-	var branchList []*Branch
-	connection.Find(&branchList)
+	var branchList []*entities.Announcement
+	connection.Preload("User").Find(&branchList)
 
 	GenericResponse(context, config.SUCCESS, "", branchList)
 }
 
-// create branch
-func PostBranch(context *gin.Context) {
+// create announcement
+func PostAnnouncement(context *gin.Context) {
 	lang := context.Keys["Lang"]
-	body := request.BranchCreateRequest{}
+	body := request.AnnouncementCreateRequest{}
 	if err := context.ShouldBindJSON(&body); err != nil {
 		utils.CheckError(err, context, utils.TextLanguage("badRequest", lang.(string)))
 		return
 	}
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
-	var branch Branch
-	connection.Where("name = ?", body.Name).First(&branch)
-	if branch.Name != "" {
-		GenericResponse(context, config.ERROR, utils.TextLanguage("branchAlreadyExist", lang.(string)), nil)
-		return
-	}
 
-	newUser := Branch{Name: body.Name, PhoneNumber: body.PhoneNumber, Address: body.Address}
-	connection.Create(&newUser)
+	newAnnouncement := entities.Announcement{Title: body.Title, Description: body.Description, Type: body.Type, UserID: body.UserId, StartDate: body.StartDate, EndDate: body.EndDate}
+	connection.Create(&newAnnouncement)
 	GenericResponse(context, config.SUCCESS, "", nil)
 }
 
-// update branch
-func UpdateBranch(context *gin.Context) {
+// update announcement
+func UpdateAnnouncement(context *gin.Context) {
 	lang := context.Keys["Lang"]
-	body := request.BranchUpdateRequest{}
+	body := request.AnnouncementUpdateRequest{}
 	if err := context.ShouldBindJSON(&body); err != nil {
 		utils.CheckError(err, context, utils.TextLanguage("badRequest", lang.(string)))
 		return
 	}
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
-	var branch Branch
-	connection.Where("id = ?", body.Id).First(&branch)
-	if branch.Name == "" {
+	var announcement entities.Announcement
+	connection.Where("id = ?", body.Id).First(&announcement)
+	if announcement.Title == "" {
 		GenericResponse(context, config.ERROR, utils.TextLanguage("notFound", lang.(string)), nil)
 		return
 	}
 
-	var existBranch Branch
-	connection.Where("name = ?", body.Name).Not("id = ?", branch.ID).First(&existBranch)
-
-	if existBranch.Name != "" {
-		GenericResponse(context, config.ERROR, utils.TextLanguage("branchAlreadyExist", lang.(string)), nil)
-		return
-	}
-
-	branch.Name = body.Name
-	branch.Address = body.Address
-	branch.PhoneNumber = body.PhoneNumber
-	connection.Save(&branch)
+	announcement.Title = body.Title
+	announcement.Description = body.Description
+	announcement.Type = body.Type
+	announcement.UserID = body.UserId
+	announcement.StartDate = body.StartDate
+	announcement.EndDate = body.EndDate
+	connection.Save(&announcement)
 	GenericResponse(context, config.SUCCESS, "", nil)
 }
 
-// getById branch
-func GetBranchById(context *gin.Context) {
+// getById announcement
+func GetAnnouncementById(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	uri := request.IdRequest{}
 	if err := context.BindUri(&uri); err != nil {
@@ -85,18 +74,18 @@ func GetBranchById(context *gin.Context) {
 	}
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
-	var branch Branch
-	connection.Where("id = ?", uri.Id).First(&branch)
-	if branch.Name == "" {
+	var announcement entities.Announcement
+	connection.Where("id = ?", uri.Id).First(&announcement)
+	if announcement.Title == "" {
 		GenericResponse(context, config.ERROR, utils.TextLanguage("notFound", lang.(string)), nil)
 		return
 	}
 
-	GenericResponse(context, config.SUCCESS, "", branch)
+	GenericResponse(context, config.SUCCESS, "", announcement)
 }
 
-// delete branch
-func DeleteBranchById(context *gin.Context) {
+// delete announcement
+func DeleteAnnouncementById(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	uri := request.IdRequest{}
 	if err := context.BindUri(&uri); err != nil {
@@ -105,6 +94,6 @@ func DeleteBranchById(context *gin.Context) {
 	}
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
-	connection.Delete(&Branch{}, uri.Id)
+	connection.Delete(&entities.Announcement{}, uri.Id)
 	GenericResponse(context, config.SUCCESS, "", nil)
 }

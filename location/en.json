@@ -4,6 +4,8 @@
   "badRequest": "Please, check request",
   "emailAlreadyExist": "Email already exist",
   "branchAlreadyExist": "Branch name already exist",
+  "classAlreadyExist": "Class name already exist",
+  "lessonAlreadyExist": "Lesson name already exist",
   "error": "An unexpected error occurred",
   "notFound": "Record not found"
 }

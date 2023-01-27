@@ -36,6 +36,30 @@ func Run() {
 	branchs.GET("/:id", GetBranchById)
 	branchs.DELETE("/:id", DeleteBranchById)
 
+	announcements := api.Group("/announcement")
+	announcements.Use(middleware.AuthorizationToken([]string{string(Admin)}))
+	announcements.GET("/", GetAnnouncementList)
+	announcements.POST("/", PostAnnouncement)
+	announcements.PUT("/", UpdateAnnouncement)
+	announcements.GET("/:id", GetAnnouncementById)
+	announcements.DELETE("/:id", DeleteAnnouncementById)
+
+	classes := api.Group("/class")
+	classes.Use(middleware.AuthorizationToken([]string{string(Admin)}))
+	classes.GET("/", GetClassList)
+	classes.POST("/", PostClass)
+	classes.PUT("/", UpdateClass)
+	classes.GET("/:id", GetClassById)
+	classes.DELETE("/:id", DeleteClassById)
+
+	lessons := api.Group("/lesson")
+	lessons.Use(middleware.AuthorizationToken([]string{string(Admin)}))
+	lessons.GET("/", GetLessonList)
+	lessons.POST("/", PostLesson)
+	lessons.PUT("/", UpdateLesson)
+	lessons.GET("/:id", GetLessonById)
+	lessons.DELETE("/:id", DeleteLessonById)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 }
