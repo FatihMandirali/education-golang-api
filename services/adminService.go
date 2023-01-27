@@ -58,7 +58,7 @@ func PostAdmin(context *gin.Context) {
 		return
 	}
 
-	newUser := User{Name: body.Name, Surname: body.Surname, Email: body.Email, Role: enum.Admin, Password: hashPassword}
+	newUser := User{Name: body.Name, Surname: body.Surname, Email: body.Email, Role: enum.Admin, Password: hashPassword, PhoneNumber: body.PhoneNumber}
 	connection.Create(&newUser)
 	GenericResponse(context, SUCCESS, "", nil)
 }
@@ -97,6 +97,7 @@ func UpdateAdmin(context *gin.Context) {
 	user.Email = body.Email
 	user.Name = body.Name
 	user.Surname = body.Surname
+	user.PhoneNumber = body.PhoneNumber
 	connection.Save(&user)
 	GenericResponse(context, SUCCESS, "", nil)
 }

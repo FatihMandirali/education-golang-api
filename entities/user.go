@@ -6,10 +6,11 @@ import (
 )
 
 type User struct {
-	gorm.Model `json:"model"`
-	Role       enum.RoleEnum `json:"role"`
-	Email      string        `json:"email"`
-	Name       string        `json:"name"`
-	Surname    string        `json:"surname"`
-	Password   string        `json:"password"`
+	gorm.Model  `json:"model"`
+	Role        enum.RoleEnum `json:"role"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Surname     string        `json:"surname"`
+	Password    string        `json:"password"`
+	PhoneNumber string        `json:"phoneNumber"`
 }

@@ -19,6 +19,7 @@ func Run() {
 	//Admins
 	api := r.Group("/api")
 	api.Use(middleware.ValidateToken())
+
 	admins := api.Group("/admin")
 	admins.Use(middleware.AuthorizationToken([]string{string(Admin)}))
 	admins.GET("/", GetAdmins)
@@ -26,6 +27,14 @@ func Run() {
 	admins.PUT("/", UpdateAdmin)
 	admins.GET("/:id", GetAdminById)
 	admins.DELETE("/:id", DeleteAdminById)
+
+	branchs := api.Group("/branch")
+	branchs.Use(middleware.AuthorizationToken([]string{string(Admin)}))
+	branchs.GET("/", GetBranchList)
+	branchs.POST("/", PostBranch)
+	branchs.PUT("/", UpdateBranch)
+	branchs.GET("/:id", GetBranchById)
+	branchs.DELETE("/:id", DeleteBranchById)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")

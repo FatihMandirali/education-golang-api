@@ -3,6 +3,7 @@
   "tokenError": "Lütfen tekrar giriş yapın",
   "badRequest": "Lütfen isteğinizi kontrol ediniz",
   "emailAlreadyExist": "Email ile kayıt zaten bulunmaktadır",
+  "branchAlreadyExist": "Şube adı ile kayıt zaten bulunmaktadır",
   "error": "Beklenmedik bir hata oluştu",
   "notFound": "Kayıt bulunamadı"
 }

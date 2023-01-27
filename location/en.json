@@ -3,6 +3,7 @@
   "tokenError": "Pelease, You are repeat login",
   "badRequest": "Please, check request",
   "emailAlreadyExist": "Email already exist",
+  "branchAlreadyExist": "Branch name already exist",
   "error": "An unexpected error occurred",
   "notFound": "Record not found"
 }
