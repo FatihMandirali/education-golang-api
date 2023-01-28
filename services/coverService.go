@@ -8,35 +8,21 @@ import (
 	"education.api/enum"
 	. "education.api/generic"
 	"education.api/utils"
-	"github.com/biezhi/gorm-paginator/pagination"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 // admin list
-func GetAdmins(context *gin.Context) {
-	query := context.Request.URL.Query()
-	queryPage, _ := strconv.Atoi(query.Get("page"))
-	queryLimit, _ := strconv.Atoi(query.Get("limit"))
-
+func GetCover(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
 	var user []*User
-	db := connection.Where("role = ?", enum.Admin)
-	//db := connection.Where("email = ?","fatih@gmail.com")
-	//https://github.com/hellokaton/gorm-paginator
-	response := pagination.Paging(&pagination.Param{
-		DB:      db,
-		Page:    queryPage,
-		Limit:   queryLimit,
-		OrderBy: []string{"id desc"},
-	}, &user)
-	GenericResponse(context, SUCCESS, "", response)
+	connection.Where("role = ?", enum.Cover).Find(&user)
+	GenericResponse(context, SUCCESS, "", user)
 }
 
 // create admin
-func PostAdmin(context *gin.Context) {
+func PostCover(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	body := UserCreateRequest{}
 	if err := context.ShouldBindJSON(&body); err != nil {
@@ -58,13 +44,13 @@ func PostAdmin(context *gin.Context) {
 		return
 	}
 
-	newUser := User{Name: body.Name, Surname: body.Surname, Email: body.Email, Role: enum.Admin, Password: hashPassword, PhoneNumber: body.PhoneNumber}
+	newUser := User{Name: body.Name, Surname: body.Surname, Email: body.Email, Role: enum.Cover, Password: hashPassword, PhoneNumber: body.PhoneNumber}
 	connection.Create(&newUser)
 	GenericResponse(context, SUCCESS, "", nil)
 }
 
 // update admin
-func UpdateAdmin(context *gin.Context) {
+func UpdateCover(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	body := UpdateUserRequest{}
 	if err := context.ShouldBindJSON(&body); err != nil {
@@ -74,7 +60,7 @@ func UpdateAdmin(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 	var user User
-	connection.Where("id = ?", body.Id).Where("role = ?", enum.Admin).First(&user)
+	connection.Where("id = ?", body.Id).Where("role = ?", enum.Cover).First(&user)
 	if user.Email == "" {
 		GenericResponse(context, ERROR, utils.TextLanguage("notFound", lang.(string)), nil)
 		return
@@ -103,7 +89,7 @@ func UpdateAdmin(context *gin.Context) {
 }
 
 // getById admin
-func GetAdminById(context *gin.Context) {
+func GetCoverById(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	uri := IdRequest{}
 	if err := context.BindUri(&uri); err != nil {
@@ -113,7 +99,7 @@ func GetAdminById(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 	var user User
-	connection.Where("id = ?", uri.Id).Where("role = ?", enum.Admin).First(&user)
+	connection.Where("id = ?", uri.Id).Where("role = ?", enum.Cover).First(&user)
 	if user.Email == "" {
 		GenericResponse(context, ERROR, utils.TextLanguage("notFound", lang.(string)), nil)
 		return
@@ -123,7 +109,7 @@ func GetAdminById(context *gin.Context) {
 }
 
 // delete admin
-func DeleteAdminById(context *gin.Context) {
+func DeleteCoverById(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	uri := IdRequest{}
 	if err := context.BindUri(&uri); err != nil {
@@ -132,6 +118,6 @@ func DeleteAdminById(context *gin.Context) {
 	}
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
-	connection.Where("role = ?", enum.Admin).Delete(&User{}, uri.Id)
+	connection.Where("role = ?", enum.Cover).Delete(&User{}, uri.Id)
 	GenericResponse(context, SUCCESS, "", nil)
 }

@@ -3,6 +3,7 @@ package entities
 import (
 	"education.api/enum"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type User struct {
@@ -13,4 +14,13 @@ type User struct {
 	Surname     string        `json:"surname"`
 	Password    string        `json:"password"`
 	PhoneNumber string        `json:"phoneNumber"`
+	BranchID    int           `json:"branchId"`
+	Branch      Branch        `json:"branch"`
+	LessonID    int           `json:"lessonId"`
+	Lesson      Lesson        `json:"lesson"`
+	ClassID     int           `json:"classId"`
+	Class       Class         `json:"class"`
+	IsRecord    bool          `json:"isRecord"`
+	TotalAmount float32       `json:"totalAmount"`
+	RecordDate  time.Time     `json:"recordDate"`
 }
