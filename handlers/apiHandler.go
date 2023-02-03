@@ -76,6 +76,12 @@ func Run() {
 	classes.GET("/:id", GetClassById)
 	classes.DELETE("/:id", DeleteClassById)
 
+	studentApply := api.Group("/studentPayment")
+	studentApply.Use(middleware.AuthorizationToken([]string{string(Admin)}))
+	studentApply.POST("/apply", PostRecordApplyStudent)
+	studentApply.GET("/list/:id", GetStudentPaymentList)
+	studentApply.POST("/installment", PostPaymentInstallment)
+
 	lessons := api.Group("/lesson")
 	lessons.Use(middleware.AuthorizationToken([]string{string(Admin)}))
 	lessons.GET("/", GetLessonList)
