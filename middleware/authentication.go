@@ -18,7 +18,7 @@ func ValidateToken() gin.HandlerFunc {
 			return []byte(JwtSecret), nil
 		})
 
-		if !tkn.Valid || error != nil {
+		if tkn == nil || !tkn.Valid || error != nil {
 			context.AbortWithStatusJSON(http.StatusOK, BaseResponse{StatusCode: ERROR, Message: TextLanguage("tokenError", lang)})
 			return
 		}

@@ -4,16 +4,25 @@ import (
 	. "education.api/config"
 	"education.api/dbconnect"
 	. "education.api/dto/request"
+	"education.api/dto/response"
 	. "education.api/entities"
 	"education.api/enum"
 	. "education.api/generic"
 	"education.api/utils"
+	"encoding/json"
 	"github.com/biezhi/gorm-paginator/pagination"
 	"github.com/gin-gonic/gin"
+	_ "github.com/swaggo/swag/example/celler/httputil"
 	"strconv"
 )
 
-// admin list
+// GetAdmins is the handler of list user endpoint
+// @Summary List users
+// @Description list all the users based on filter given
+// @Tags user
+// @Produce  json
+// @
+// @Router /api/admin [get]
 func GetAdmins(context *gin.Context) {
 	query := context.Request.URL.Query()
 	queryPage, _ := strconv.Atoi(query.Get("page"))
@@ -26,13 +35,17 @@ func GetAdmins(context *gin.Context) {
 	db := connection.Where("role = ?", enum.Admin)
 	//db := connection.Where("email = ?","fatih@gmail.com")
 	//https://github.com/hellokaton/gorm-paginator
-	response := pagination.Paging(&pagination.Param{
+	pagination := pagination.Paging(&pagination.Param{
 		DB:      db,
 		Page:    queryPage,
 		Limit:   queryLimit,
 		OrderBy: []string{"id desc"},
 	}, &user)
-	GenericResponse(context, SUCCESS, "", response)
+	jsonParse, _ := json.Marshal(pagination.Records)
+	userList := []User{}
+	json.Unmarshal(jsonParse, &userList)
+	pagination.Records = response.CreateAdminListResponse(userList)
+	GenericResponse(context, SUCCESS, "", pagination)
 }
 
 // create admin
@@ -118,8 +131,8 @@ func GetAdminById(context *gin.Context) {
 		GenericResponse(context, ERROR, utils.TextLanguage("notFound", lang.(string)), nil)
 		return
 	}
-
-	GenericResponse(context, SUCCESS, "", user)
+	data := response.CreateAdminResponse(user)
+	GenericResponse(context, SUCCESS, "", data)
 }
 
 // delete admin

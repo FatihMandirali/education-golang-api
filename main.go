@@ -5,6 +5,10 @@ import (
 	"education.api/handlers"
 )
 
+// @title User API
+// @description User microservice server.
+// @schemes http https
+// @securityDefinitions.basic BasicAuth
 func main() {
 	dbconnect.DbInit()
 	dbconnect.InitialMigration()

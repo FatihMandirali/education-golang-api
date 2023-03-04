@@ -18,7 +18,6 @@ import (
 // @Summary Login servisi
 // @Produce json
 // @Accept json
-// @Param quote body quote true "Alıntı Bilgileri"
 // @Success 200
 // @Failure 400
 // @Failure 500

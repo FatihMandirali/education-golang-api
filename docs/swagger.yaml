@@ -1,0 +1,35 @@
+info:
+  contact: {}
+  description: User microservice server.
+  title: User API
+paths:
+  /api/admin:
+    get:
+      description: list all the users based on filter given
+      produces:
+      - application/json
+      responses: {}
+      summary: List users
+      tags:
+      - user
+  /login/:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Login servisi
+schemes:
+- http
+- https
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
