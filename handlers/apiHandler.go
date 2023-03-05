@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	_ "education.api/cmd/docs" //swagger sayfasının hata vermemesi için eklememiz lazım
-	. "education.api/enum"
+	_ "education.api/docs" //swagger sayfasının hata vermemesi için eklememiz lazım
+	"education.api/enum"
 	"education.api/middleware"
 	. "education.api/services"
 	"github.com/gin-gonic/gin"
@@ -14,21 +14,23 @@ import (
 // swagger init hatası çözümü: https://github.com/swaggo/swag/issues/197
 func Run() {
 	r := gin.Default()
+	r.Use(middleware.CORSMiddleware())
+
 	//Login
-	r.POST("/login", PostLogin)
-	//Admins
+	r.POST("login", PostLogin)
+
 	api := r.Group("/api")
 	api.Use(middleware.ValidateToken())
 
 	admins := api.Group("/admin")
-	admins.Use(middleware.AuthorizationToken([]string{string(Admin)}))
-	admins.GET("/", GetAdmins)
-	admins.POST("/", PostAdmin)
-	admins.PUT("/", UpdateAdmin)
+	admins.Use(middleware.AuthorizationToken([]string{string(enum.Admin)}))
+	admins.GET("list", GetAdmins)
+	admins.POST("create", PostAdmin)
+	admins.PUT("update", UpdateAdmin)
 	admins.GET("/:id", GetAdminById)
 	admins.DELETE("/:id", DeleteAdminById)
 
-	covers := api.Group("/cover")
+	/*covers := api.Group("/cover")
 	covers.Use(middleware.AuthorizationToken([]string{string(Admin)}))
 	covers.GET("/", GetCover)
 	covers.POST("/", PostCover)
@@ -88,7 +90,7 @@ func Run() {
 	lessons.POST("/", PostLesson)
 	lessons.PUT("/", UpdateLesson)
 	lessons.GET("/:id", GetLessonById)
-	lessons.DELETE("/:id", DeleteLessonById)
+	lessons.DELETE("/:id", DeleteLessonById)*/
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")

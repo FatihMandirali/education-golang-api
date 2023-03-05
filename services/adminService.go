@@ -24,15 +24,20 @@ import (
 // @
 // @Router /api/admin [get]
 func GetAdmins(context *gin.Context) {
-	query := context.Request.URL.Query()
-	queryPage, _ := strconv.Atoi(query.Get("page"))
-	queryLimit, _ := strconv.Atoi(query.Get("limit"))
+	queryPage, _ := strconv.Atoi(context.Query("page"))
+	queryLimit, _ := strconv.Atoi(context.Query("limit"))
+	search := context.Query("search")
 
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
 	var user []*User
 	db := connection.Where("role = ?", enum.Admin)
+
+	if search != "" {
+		db = db.Where("name LIKE ?", "%"+search+"%").Or("surname LIKE ? ", "%"+search+"%").Or("email LIKE ? ", "%"+search+"%").Or("phone_number LIKE ? ", "%"+search+"%")
+	}
+
 	//db := connection.Where("email = ?","fatih@gmail.com")
 	//https://github.com/hellokaton/gorm-paginator
 	pagination := pagination.Paging(&pagination.Param{

@@ -12,6 +12,7 @@ type AdminResponse struct {
 	Surname     string    `json:"surname"`
 	PhoneNumber string    `json:"phoneNumber"`
 	CreateDate  time.Time `json:"createDate"`
+	IsActive    bool      `json:"isActive"`
 }
 
 func CreateAdminResponse(user entities.User) AdminResponse {
@@ -22,6 +23,7 @@ func CreateAdminResponse(user entities.User) AdminResponse {
 		Surname:     user.Surname,
 		PhoneNumber: user.PhoneNumber,
 		CreateDate:  user.CreatedAt,
+		IsActive:    user.DeletedAt == nil,
 	}
 }
 
