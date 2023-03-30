@@ -23,7 +23,7 @@ func CreateAdminResponse(user entities.User) AdminResponse {
 		Surname:     user.Surname,
 		PhoneNumber: user.PhoneNumber,
 		CreateDate:  user.CreatedAt,
-		IsActive:    user.DeletedAt == nil,
+		IsActive:    user.IsActive,
 	}
 }
 

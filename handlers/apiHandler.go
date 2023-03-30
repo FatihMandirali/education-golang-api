@@ -28,7 +28,7 @@ func Run() {
 	admins.POST("create", PostAdmin)
 	admins.PUT("update", UpdateAdmin)
 	admins.GET("/:id", GetAdminById)
-	admins.DELETE("/:id", DeleteAdminById)
+	admins.DELETE("delete/:id", DeleteAdminById)
 
 	/*covers := api.Group("/cover")
 	covers.Use(middleware.AuthorizationToken([]string{string(Admin)}))

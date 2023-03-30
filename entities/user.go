@@ -26,4 +26,5 @@ type User struct {
 	PaymentType enum.StudentApplyPaymentEnum `json:"paymentType"`
 	Installment int                          `json:"installment"`
 	RecordDate  time.Time                    `json:"recordDate"`
+	IsActive    bool                         `json:"isActive"`
 }

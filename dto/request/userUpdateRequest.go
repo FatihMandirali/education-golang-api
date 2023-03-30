@@ -10,4 +10,5 @@ type UpdateUserRequest struct {
 	BranchId    int    `json:"branchId"`
 	ClassId     int    `json:"classId"`
 	LessonId    int    `json:"lessonId"`
+	IsActive    bool   `json:"isActive"`
 }

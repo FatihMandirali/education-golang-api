@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/swaggo/swag/example/celler/httputil"
 	"strconv"
+	"time"
 )
 
 // GetAdmins is the handler of list user endpoint
@@ -27,12 +28,22 @@ func GetAdmins(context *gin.Context) {
 	queryPage, _ := strconv.Atoi(context.Query("page"))
 	queryLimit, _ := strconv.Atoi(context.Query("limit"))
 	search := context.Query("search")
+	startDate, errorStartDate := time.Parse(time.RFC3339, context.Query("startDate"))
+	endDate, errorEndDate := time.Parse(time.RFC3339, context.Query("endDate"))
+	isActive, _ := strconv.ParseBool(context.Query("isActive"))
 
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
-
 	var user []*User
-	db := connection.Where("role = ?", enum.Admin)
+	db := connection.Where("role = ?", enum.Admin).Where("is_active = ?", isActive)
+
+	if errorStartDate == nil || !startDate.IsZero() {
+		db = db.Where("created_at >= ?", startDate)
+	}
+
+	if errorEndDate == nil || !endDate.IsZero() {
+		db = db.Where("created_at <= ?", endDate)
+	}
 
 	if search != "" {
 		db = db.Where("name LIKE ?", "%"+search+"%").Or("surname LIKE ? ", "%"+search+"%").Or("email LIKE ? ", "%"+search+"%").Or("phone_number LIKE ? ", "%"+search+"%")
@@ -76,7 +87,7 @@ func PostAdmin(context *gin.Context) {
 		return
 	}
 
-	newUser := User{Name: body.Name, Surname: body.Surname, Email: body.Email, Role: enum.Admin, Password: hashPassword, PhoneNumber: body.PhoneNumber}
+	newUser := User{Name: body.Name, Surname: body.Surname, Email: body.Email, Role: enum.Admin, Password: hashPassword, PhoneNumber: body.PhoneNumber, IsActive: body.IsActive}
 	connection.Create(&newUser)
 	GenericResponse(context, SUCCESS, "", nil)
 }
@@ -116,6 +127,7 @@ func UpdateAdmin(context *gin.Context) {
 	user.Name = body.Name
 	user.Surname = body.Surname
 	user.PhoneNumber = body.PhoneNumber
+	user.IsActive = body.IsActive
 	connection.Save(&user)
 	GenericResponse(context, SUCCESS, "", nil)
 }
