@@ -9,4 +9,5 @@ type Branch struct {
 	Name        string `json:"name"`
 	PhoneNumber string `json:"phoneNumber"`
 	Address     string `json:"address"`
+	IsActive    bool   `json:"isActive"`
 }

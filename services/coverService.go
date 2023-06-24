@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// admin list
+// cover list
 func GetCover(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
@@ -21,7 +21,7 @@ func GetCover(context *gin.Context) {
 	GenericResponse(context, SUCCESS, "", user)
 }
 
-// create admin
+// create cover
 func PostCover(context *gin.Context) {
 	lang := context.Keys["Lang"]
 	body := UserCreateRequest{}

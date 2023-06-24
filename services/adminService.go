@@ -35,7 +35,7 @@ func GetAdmins(context *gin.Context) {
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 	var user []*User
-	db := connection.Where("role = ?", enum.Admin).Where("is_active = ?", isActive)
+	db := connection.Preload("Branch").Where("role = ?", enum.Admin).Where("is_active = ?", isActive)
 
 	if errorStartDate == nil || !startDate.IsZero() {
 		db = db.Where("created_at >= ?", startDate)

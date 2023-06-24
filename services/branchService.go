@@ -7,17 +7,54 @@ import (
 	. "education.api/entities"
 	. "education.api/generic"
 	"education.api/utils"
+	"github.com/biezhi/gorm-paginator/pagination"
 	"github.com/gin-gonic/gin"
+	"strconv"
+	"time"
 )
 
 // branch list
 func GetBranchList(context *gin.Context) {
+	queryPage, _ := strconv.Atoi(context.Query("page"))
+	queryLimit, _ := strconv.Atoi(context.Query("limit"))
+	search := context.Query("search")
+	startDate, errorStartDate := time.Parse(time.RFC3339, context.Query("startDate"))
+	endDate, errorEndDate := time.Parse(time.RFC3339, context.Query("endDate"))
+	isActive, _ := strconv.ParseBool(context.Query("isActive"))
+
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
 	var branchList []*Branch
-	connection.Find(&branchList)
+	db := connection.Where("is_active = ?", isActive)
 
+	if errorStartDate == nil || !startDate.IsZero() {
+		db = db.Where("created_at >= ?", startDate)
+	}
+
+	if errorEndDate == nil || !endDate.IsZero() {
+		db = db.Where("created_at <= ?", endDate)
+	}
+	if search != "" {
+		db = db.Where("name LIKE ?", "%"+search+"%").Or("surname LIKE ? ", "%"+search+"%").Or("email LIKE ? ", "%"+search+"%").Or("phone_number LIKE ? ", "%"+search+"%")
+	}
+	//db := connection.Where("email = ?","fatih@gmail.com")
+	//https://github.com/hellokaton/gorm-paginator
+	pagination := pagination.Paging(&pagination.Param{
+		DB:      db,
+		Page:    queryPage,
+		Limit:   queryLimit,
+		OrderBy: []string{"id desc"},
+	}, &branchList)
+
+	GenericResponse(context, config.SUCCESS, "", pagination)
+}
+
+func GetAllBranchList(context *gin.Context) {
+	connection := dbconnect.DbInit()
+	defer dbconnect.CloseDatabase(connection)
+	var branchList []*Branch
+	connection.Where("is_active = ?", true).Find(&branchList)
 	GenericResponse(context, config.SUCCESS, "", branchList)
 }
 

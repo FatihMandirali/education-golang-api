@@ -9,4 +9,6 @@ type Class struct {
 	Name       string `json:"name"`
 	BranchID   int    `json:"branchId"`
 	Branch     Branch `json:"branch"`
+	IsActive   bool   `json:"isActive"`
+	//TODO: SINIF ÖĞRETMENİ EKLE
 }
