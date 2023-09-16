@@ -21,6 +21,16 @@ func GetCover(context *gin.Context) {
 	GenericResponse(context, SUCCESS, "", user)
 }
 
+// cover all list
+func GetCoverAllList(context *gin.Context) {
+	connection := dbconnect.DbInit()
+	defer dbconnect.CloseDatabase(connection)
+
+	var user []*User
+	connection.Where("role = ?", enum.Cover).Where("is_active = ?", true).Find(&user)
+	GenericResponse(context, SUCCESS, "", user)
+}
+
 // create cover
 func PostCover(context *gin.Context) {
 	lang := context.Keys["Lang"]

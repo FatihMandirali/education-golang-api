@@ -27,4 +27,5 @@ type User struct {
 	Installment int                          `json:"installment"`
 	RecordDate  time.Time                    `json:"recordDate"`
 	IsActive    bool                         `json:"isActive"`
+	CoverID     int                          `json:"coverId"`
 }

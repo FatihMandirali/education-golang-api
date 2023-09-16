@@ -20,13 +20,13 @@ func GetClassList(context *gin.Context) {
 	search := context.Query("search")
 	startDate, errorStartDate := time.Parse(time.RFC3339, context.Query("startDate"))
 	endDate, errorEndDate := time.Parse(time.RFC3339, context.Query("endDate"))
-	isActive, _ := strconv.ParseBool(context.Query("isActive"))
+	//isActive, _ := strconv.ParseBool(context.Query("isActive"))
 
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
 	var classList []*entities.Class
-	db := connection.Preload("Branch").Where("is_active = ?", isActive)
+	db := connection.Preload("Branch")
 	//connection.Preload("Branch").Find(&classList)
 	if errorStartDate == nil || !startDate.IsZero() {
 		db = db.Where("created_at >= ?", startDate)
@@ -44,6 +44,16 @@ func GetClassList(context *gin.Context) {
 		OrderBy: []string{"id desc"},
 	}, &classList)
 	GenericResponse(context, config.SUCCESS, "", pagination)
+}
+
+// class list
+func GetClassAllList(context *gin.Context) {
+	connection := dbconnect.DbInit()
+	defer dbconnect.CloseDatabase(connection)
+
+	var classList []*entities.Class
+	connection.Preload("Branch").Where("is_active = ?", true).Find(&classList)
+	GenericResponse(context, config.SUCCESS, "", classList)
 }
 
 // create class

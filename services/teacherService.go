@@ -97,7 +97,7 @@ func UpdateTeacher(context *gin.Context) {
 	user.PhoneNumber = body.PhoneNumber
 	user.ClassID = body.ClassId
 	user.BranchID = body.BranchId
-	user.LessonID = body.LessonId
+	//user.LessonID = body.LessonId
 	connection.Save(&user)
 	GenericResponse(context, SUCCESS, "", nil)
 }

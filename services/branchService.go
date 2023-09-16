@@ -20,13 +20,13 @@ func GetBranchList(context *gin.Context) {
 	search := context.Query("search")
 	startDate, errorStartDate := time.Parse(time.RFC3339, context.Query("startDate"))
 	endDate, errorEndDate := time.Parse(time.RFC3339, context.Query("endDate"))
-	isActive, _ := strconv.ParseBool(context.Query("isActive"))
+	//isActive, _ := strconv.ParseBool(context.Query("isActive"))
 
 	connection := dbconnect.DbInit()
 	defer dbconnect.CloseDatabase(connection)
 
 	var branchList []*Branch
-	db := connection.Where("is_active = ?", isActive)
+	db := connection
 
 	if errorStartDate == nil || !startDate.IsZero() {
 		db = db.Where("created_at >= ?", startDate)
@@ -75,7 +75,7 @@ func PostBranch(context *gin.Context) {
 		return
 	}
 
-	newUser := Branch{Name: body.Name, PhoneNumber: body.PhoneNumber, Address: body.Address}
+	newUser := Branch{Name: body.Name, PhoneNumber: body.PhoneNumber, Address: body.Address, IsActive: body.IsActive}
 	connection.Create(&newUser)
 	GenericResponse(context, config.SUCCESS, "", nil)
 }
@@ -108,6 +108,7 @@ func UpdateBranch(context *gin.Context) {
 	branch.Name = body.Name
 	branch.Address = body.Address
 	branch.PhoneNumber = body.PhoneNumber
+	branch.IsActive = body.IsActive
 	connection.Save(&branch)
 	GenericResponse(context, config.SUCCESS, "", nil)
 }
